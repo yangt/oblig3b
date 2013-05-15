@@ -69,6 +69,7 @@
         ((begin? exp) 
          (eval-sequence (begin-actions exp) env))
         ((cond? exp) (mc-eval (cond->if exp) env))
+        ((let? exp) (eval-let exp env))
         ((and? exp) (eval-and exp env))
         ((or? exp) (eval-or exp env))))
 
@@ -80,6 +81,7 @@
         ((lambda? exp) #t)
         ((begin? exp) #t)
         ((cond? exp) #t)
+        ((let? exp) #t)
         ((and? exp) #t)
         ((or? exp) #t)
         (else #f)))
@@ -269,7 +271,18 @@
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
 
+(define (let? exp) (tagged-list? exp 'let))
+(define (let-args exp) (cadr exp))
+(define (let-vars exp) (map car (let-args exp)))
+(define (let-exps exp) (map cadr (let-args exp)))
+(define (let-body exp) (caddr exp))
+
+
+(define (eval-let exp env)
+  (mc-eval (cons (make-lambda (let-vars exp) (list (let-body exp))) (let-exps exp)) env))
+
 (define (and? exp) (tagged-list? exp 'and))
+
 (define (or? exp) (tagged-list? exp 'or))
 
 
