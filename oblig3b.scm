@@ -12,7 +12,13 @@
 (mc-eval '(define (square x) (* x x)) the-global-environment)
 #| Test run:
 (mc-eval '(foo 2 square) the-global-environment) ;; --> 0. 
-#| 
+#|
+First and foremost, the conditial statement "(cond ..." will be correctly
+recognized as a conditional statement, and not the variable "cond",
+since neither self-evaluating expressions nor variable names start with "(".
+Specifically this means that self-evaluating? -> number? and string? will return
+false. As will variable? -> symbol?.
+
 The variable cond binds to 2. 
 cond evaluates the first statement (= cond 2) which is true, 
 so 0 is returned.
