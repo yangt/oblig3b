@@ -1,7 +1,7 @@
 (load "evaluator.scm")
 
 (set! the-global-environment (setup-environment))
-;;(read-eval-print-loop)
+
 ;; 1a
 (mc-eval '(define (foo cond else)
            (cond ((= cond 2) 0)
@@ -31,6 +31,7 @@ The second else is the procedure which divide the input by 2.
 8 is divided by 2 which is 4.
 |#
 |#
+
 ;; 2a
 (mc-eval '(define (1+ x) (+ x 1)) the-global-environment)
 (mc-eval '(define (1- x) (- x 1)) the-global-environment)
@@ -38,10 +39,15 @@ The second else is the procedure which divide the input by 2.
 (mc-eval '(1+ 2) the-global-environment)
 (mc-eval '(1- 2) the-global-environment)
 |#
+
 ;; 2b
 (define (install-primitive! proc-name proc)
   (set! primitive-procedures 
         (cons (list proc-name proc) primitive-procedures)))
+
+#| Test run:
+(install-primitive! 'square (lambda (x) (* x x))
+|#
 
 ;; 3a
 ;; 3b
