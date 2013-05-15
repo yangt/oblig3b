@@ -55,6 +55,26 @@ The second else is the procedure which divide the input by 2.
 |#
 
 ;; 3a
+#|
+Made changes to evaluator.scm:
+below line 71, added routines for evaluating and and or
+below line 82, added check for special forms and? and or?
+below line 113, added eval-and and eval-or
+at line 129, added check for boolean self-evaluating expressions
+below line 271, added and? and or?
+|#
+#| Test run:
+(mc-eval '(define (and-test)
+           (and #t #t)) the-global-environment)
+(mc-eval '(define (or-test)
+           (and #t #f)) the-global-environment)
+
+(mc-eval '(and #t #t #t #t) the-global-environment) ;; #t
+(mc-eval '(and #t #t #f #f) the-global-environment) ;; #f
+(mc-eval '(or #f #f #f #t) the-global-environment) ;; #t
+(mc-eval '(or #t #f #f #t) the-global-environment) ;; #t
+(mc-eval '(or #f #f #f #f) the-global-environment) ;; #f
+|#
 ;; 3b
 ;; 3c
 ;; 3d

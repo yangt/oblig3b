@@ -68,7 +68,9 @@
                          env))
         ((begin? exp) 
          (eval-sequence (begin-actions exp) env))
-        ((cond? exp) (mc-eval (cond->if exp) env))))
+        ((cond? exp) (mc-eval (cond->if exp) env))
+        ((and? exp) (eval-and exp env))
+        ((or? exp) (eval-or exp env))))
 
 (define (special-form? exp)
   (cond ((quoted? exp) #t)
@@ -78,6 +80,8 @@
         ((lambda? exp) #t)
         ((begin? exp) #t)
         ((cond? exp) #t)
+        ((and? exp) #t)
+        ((or? exp) #t)
         (else #f)))
 
 (define (list-of-values exps env)
@@ -108,6 +112,27 @@
                     env)
   'ok)
 
+(define (eval-and exps env)
+  (define (perform-and values)
+    (if (null? values)
+        #t
+        (if (car values)
+            (perform-and (cdr values))
+            #f)))
+  
+  (perform-and (list-of-values (rest-exps exps) env)))
+
+(define (eval-or exps env)
+  (define (perform-or values)
+    (if (null? values)
+        #f
+        (if (car values)
+            #t
+            (perform-or (cdr values)))))
+  
+  (perform-or (list-of-values (rest-exps exps) env)))
+
+
 ;;; Selektorene / aksessorene som definerer syntaksen til uttrykk i språket 
 ;;; (seksjon 4.1.2, SICP)
 ;;; -----------------------------------------------------------------------
@@ -115,6 +140,7 @@
 (define (self-evaluating? exp)
   (cond ((number? exp) #t)
         ((string? exp) #t)
+        ((boolean? exp) #t)
         (else #f)))
 
 (define (tagged-list? exp tag)
@@ -242,6 +268,9 @@
             (make-if (cond-predicate first)
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
+
+(define (and? exp) (tagged-list? exp 'and))
+(define (or? exp) (tagged-list? exp 'or))
 
 
 ;;; Evaluatorens interne datastrukturer for å representere omgivelser,
