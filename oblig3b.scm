@@ -49,6 +49,11 @@ The second else is the procedure which divide the input by 2.
   (set! primitive-procedures 
         (cons (list proc-name proc) primitive-procedures)))
 
+#| Test run:
+(install-primitive! 'square (lambda (x) (* x x)))
+(mc-eval '(square 8) the-global-environment)
+|#
+
 ;; 3a
 ;; 3b
 ;; 3c
