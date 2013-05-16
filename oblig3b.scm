@@ -12,7 +12,13 @@
 (mc-eval '(define (square x) (* x x)) the-global-environment)
 #| Test run:
 (mc-eval '(foo 2 square) the-global-environment) ;; --> 0. 
-#| 
+#|
+First and foremost, the conditial statement "(cond ..." will be correctly
+recognized as a conditional statement, and not the variable "cond",
+since neither self-evaluating expressions nor variable names start with "(".
+Specifically this means that self-evaluating? -> number? and string? will return
+false. As will variable? -> symbol?.
+
 The variable cond binds to 2. 
 cond evaluates the first statement (= cond 2) which is true, 
 so 0 is returned.
@@ -46,11 +52,59 @@ The second else is the procedure which divide the input by 2.
         (cons (list proc-name proc) primitive-procedures)))
 
 #| Test run:
+<<<<<<< HEAD
 (install-primitive! 'square (lambda (x) (* x x))
+=======
+(install-primitive! 'square (lambda (x) (* x x)))
+(mc-eval '(square 8) the-global-environment)
+>>>>>>> e709b3152f9d29e4d528447e14c0cb395a7f5150
 |#
 
 ;; 3a
+#|
+Made changes to evaluator.scm:
+below line 71, added routines for evaluating and and or
+below line 82, added check for special forms and? and or?
+below line 113, added eval-and and eval-or
+at line 129, added check for boolean self-evaluating expressions
+below line 271, added and? and or?
+|#
+#| Test run:
+(mc-eval '(define (and-test)
+           (and #t #t)) the-global-environment)
+(mc-eval '(define (or-test)
+           (and #t #f)) the-global-environment)
+
+(mc-eval '(and #t #t #t #t) the-global-environment) ;; #t
+(mc-eval '(and #t #t #f #f) the-global-environment) ;; #f
+(mc-eval '(or #f #f #f #t) the-global-environment) ;; #t
+(mc-eval '(or #t #f #f #t) the-global-environment) ;; #t
+(mc-eval '(or #f #f #f #f) the-global-environment) ;; #f
+|#
 ;; 3b
+(define (eval-if-switch exp env)
+  (if (eq? (caddr exp) 'then)
+      (eval-if-then exp env)
+  (eval-if exp env)))
+
+(define (eval-if-then exp env)
+  (cond ((tagged-list? exp 'else)
+         (mc-eval (cadr exp) env))
+        ((and (or (tagged-list? exp 'if)
+                  (tagged-list? exp 'elsif))
+                  (mc-eval (cadr exp) env)) 
+         (mc-eval (cadddr exp) env))
+        (else (eval-if-then (cddddr exp) env))))
+ 
+#| Test
+(if (= 3 2) then 'a elsif (= 3 2) then 'b else 'c) 
+;; --> c
+
+(if (= 3 2) then 'a elsif (= 3 2) then 'fdsf elsif (= 3 2) then 'dfd elsif (= 3 3) then 'b else 'c)
+;; --> b
+|#
+
+      
 ;; 3c
 ;; 3d
 ;; 3e
