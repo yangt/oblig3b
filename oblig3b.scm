@@ -1,3 +1,9 @@
+#| Delivery for
+    Martin Vonheim Larsen (martinvl)
+    Mathis Kappeler (mathisk)
+    Yang Tran (yangt)
+|#
+
 (load "evaluator.scm")
 
 (set! the-global-environment (setup-environment))
@@ -10,7 +16,7 @@
 (mc-eval '(define cond 3) the-global-environment)
 (mc-eval '(define (else x) (/ x 2)) the-global-environment)
 (mc-eval '(define (square x) (* x x)) the-global-environment)
-#| Test run:
+#| --- Test ---
 (mc-eval '(foo 2 square) the-global-environment) ;; --> 0. 
 #|
 First and foremost, the conditial statement "(cond ..." will be correctly
@@ -41,7 +47,7 @@ The second else is the procedure which divide the input by 2.
 ;; 2a
 (mc-eval '(define (1+ x) (+ x 1)) the-global-environment)
 (mc-eval '(define (1- x) (- x 1)) the-global-environment)
-#| Test run:
+#| --- Test case ---
 (mc-eval '(1+ 2) the-global-environment)
 (mc-eval '(1- 2) the-global-environment)
 |#
@@ -51,21 +57,20 @@ The second else is the procedure which divide the input by 2.
   (set! primitive-procedures 
         (cons (list proc-name proc) primitive-procedures)))
 
-#| Test run:
+#| --- Test case ---
 (install-primitive! 'square (lambda (x) (* x x))
 (install-primitive! 'square (lambda (x) (* x x)))
 (mc-eval '(square 8) the-global-environment)
 |#
 
 ;; 3a
-#|
-Made changes to evaluator.scm:
+#| Made changes to evaluator.scm:
 at line 73 and 74, added and? and or? clause in eval-special-form
 at line 85 and 86, added and? and or? clause in special-form?
 at line 124, added check for boolean self-evaluating expressions
 below line 253, added eval-and, eval-or, and? and or?
 |#
-#| Test run:
+#| --- Test case ---
 (mc-eval '(define (and-test)
            (and #t #t)) the-global-environment)
 (mc-eval '(define (or-test)
@@ -136,7 +141,6 @@ uncomment the alternative implementation of eval-let at line 321 to test
 #| --- Test case --- 
 (mc-eval '(let x = 2 and y = 3 in (display (cons x y)) (+ x y)) the-global-environment) ;; 5
 |#
-
 
 ;; 3e
 ;; 4
