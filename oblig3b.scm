@@ -52,12 +52,11 @@ The second else is the procedure which divide the input by 2.
         (cons (list proc-name proc) primitive-procedures)))
 
 #| Test run:
-<<<<<<< HEAD
+
 (install-primitive! 'square (lambda (x) (* x x))
-=======
 (install-primitive! 'square (lambda (x) (* x x)))
 (mc-eval '(square 8) the-global-environment)
->>>>>>> e709b3152f9d29e4d528447e14c0cb395a7f5150
+
 |#
 
 ;; 3a
@@ -81,9 +80,13 @@ below line 271, added and? and or?
 (mc-eval '(or #t #f #f #t) the-global-environment) ;; #t
 (mc-eval '(or #f #f #f #f) the-global-environment) ;; #f
 |#
+
 ;; 3b
+;; line 64 in evaluator.scm: 
+;; calls the function eval-if-switch defined below
+
 (define (eval-if-switch exp env)
-  (if (eq? (caddr exp) 'then)
+  (if (tagged-list? (cddr exp) 'then)
       (eval-if-then exp env)
   (eval-if exp env)))
 
@@ -97,13 +100,24 @@ below line 271, added and? and or?
         (else (eval-if-then (cddddr exp) env))))
  
 #| Test
-(if (= 3 2) then 'a elsif (= 3 2) then 'b else 'c) 
+(if (= 3 2) 
+then 'a 
+elsif (= 3 2) 
+then 'b 
+else 'c) 
 ;; --> c
 
-(if (= 3 2) then 'a elsif (= 3 2) then 'fdsf elsif (= 3 2) then 'dfd elsif (= 3 3) then 'b else 'c)
+(if (= 3 2) 
+then 'a 
+elsif (= 3 2) 
+then 'fdsf 
+elsif (= 3 2) 
+then 'dfd 
+elsif (= 3 3) 
+then 'b 
+else 'c)
 ;; --> b
 |#
-
       
 ;; 3c
 #|
