@@ -106,6 +106,14 @@ below line 271, added and? and or?
 
       
 ;; 3c
+#|
+Made changes to evaluator.scm:
+below line 274, added let?, let-args, let-vars, let-exps, let-body
+below line 281, added eval-let
+added let? clause in special-form?
+added let? clause in eval-special-form
+|#
+(mc-eval '(let ((foo 2) (bar 3)) (+ (* 8 bar) foo)) the-global-environment) ;; 26
 ;; 3d
 ;; 3e
 ;; 4
