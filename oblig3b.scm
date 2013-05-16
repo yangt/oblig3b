@@ -52,21 +52,18 @@ The second else is the procedure which divide the input by 2.
         (cons (list proc-name proc) primitive-procedures)))
 
 #| Test run:
-
 (install-primitive! 'square (lambda (x) (* x x))
 (install-primitive! 'square (lambda (x) (* x x)))
 (mc-eval '(square 8) the-global-environment)
-
 |#
 
 ;; 3a
 #|
 Made changes to evaluator.scm:
-below line 71, added routines for evaluating and and or
-below line 82, added check for special forms and? and or?
-below line 113, added eval-and and eval-or
-at line 129, added check for boolean self-evaluating expressions
-below line 271, added and? and or?
+at line 73 and 74, added and? and or? clause in eval-special-form
+at line 85 and 86, added and? and or? clause in special-form?
+at line 124, added check for boolean self-evaluating expressions
+below line 253, added eval-and, eval-or, and? and or?
 |#
 #| Test run:
 (mc-eval '(define (and-test)
@@ -120,14 +117,26 @@ else 'c)
 |#
       
 ;; 3c
-#|
-Made changes to evaluator.scm:
-below line 274, added let?, let-args, let-vars, let-exps, let-body
-below line 281, added eval-let
-added let? clause in special-form?
-added let? clause in eval-special-form
+#| Made changes to evaluator.scm:
+at line 72, added let? clause in eval-special-form
+at line 84, added let? clause in special-form?
+below line 280, added let?, let-args, let-vars, let-exps, let-body and eval-let
 |#
+
+#| --- Test case ---
 (mc-eval '(let ((foo 2) (bar 3)) (+ (* 8 bar) foo)) the-global-environment) ;; 26
+|#
+
 ;; 3d
+#| Made changes to evaluator.scm:
+below line 294, added alt-let-args, alt-let-vars, alt-let-exps, alt-let-body
+
+uncomment the alternative implementation of eval-let at line 321 to test
+|#
+#| --- Test case --- 
+(mc-eval '(let x = 2 and y = 3 in (display (cons x y)) (+ x y)) the-global-environment) ;; 5
+|#
+
+
 ;; 3e
 ;; 4

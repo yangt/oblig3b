@@ -114,26 +114,6 @@
                     env)
   'ok)
 
-(define (eval-and exps env)
-  (define (perform-and values)
-    (if (null? values)
-        #t
-        (if (car values)
-            (perform-and (cdr values))
-            #f)))
-  
-  (perform-and (list-of-values (rest-exps exps) env)))
-
-(define (eval-or exps env)
-  (define (perform-or values)
-    (if (null? values)
-        #f
-        (if (car values)
-            #t
-            (perform-or (cdr values)))))
-  
-  (perform-or (list-of-values (rest-exps exps) env)))
-
 ;;; Selektorene / aksessorene som definerer syntaksen til uttrykk i språket 
 ;;; (seksjon 4.1.2, SICP)
 ;;; -----------------------------------------------------------------------
@@ -270,20 +250,78 @@
                      (sequence->exp (cond-actions first))
                      (expand-clauses rest))))))
 
-(define (let? exp) (tagged-list? exp 'let))
-(define (let-args exp) (cadr exp))
-(define (let-vars exp) (map car (let-args exp)))
-(define (let-exps exp) (map cadr (let-args exp)))
-(define (let-body exp) (caddr exp))
-
-
-(define (eval-let exp env)
-  (mc-eval (cons (make-lambda (let-vars exp) (list (let-body exp))) (let-exps exp)) env))
-
+;; --- Task 3a begin ---
 (define (and? exp) (tagged-list? exp 'and))
 
 (define (or? exp) (tagged-list? exp 'or))
 
+(define (eval-and exps env)
+  (define (perform-and values)
+    (if (null? values)
+        #t
+        (if (car values)
+            (perform-and (cdr values))
+            #f)))
+
+  (perform-and (list-of-values (rest-exps exps) env)))
+
+(define (eval-or exps env)
+  (define (perform-or values)
+    (if (null? values)
+        #f
+        (if (car values)
+            #t
+            (perform-or (cdr values)))))
+
+  (perform-or (list-of-values (rest-exps exps) env)))
+;; --- Task 3a end ---
+
+;; --- Task 3c begin ---
+(define (let? exp) (tagged-list? exp 'let))
+
+(define (let-args exp) (cadr exp))
+
+(define (let-vars exp) (map car (let-args exp)))
+
+(define (let-exps exp) (map cadr (let-args exp)))
+
+(define (let-body exp) (caddr exp))
+
+(define (eval-let exp env)
+  (mc-eval (cons (make-lambda (let-vars exp) (list (let-body exp))) (let-exps exp)) env))
+;; --- Task 3c end ---
+
+;; --- Task 3d begin ---
+(define (alt-let-args exp) (cdr exp))
+
+(define (alt-let-vars exp)
+  (define (pick-var vars exp)
+    (let ((vars (cons (car exp) vars)))
+      (if (equal? (cadddr exp) 'and)
+        (pick-var vars (cddddr exp))
+        (reverse vars))))
+
+  (pick-var '() (alt-let-args exp)))
+
+(define (alt-let-exps exp)
+  (define (pick-exp exps exp)
+    (let ((exps (cons (caddr exp) exps)))
+      (if (equal? (cadddr exp) 'and)
+        (pick-exp exps (cddddr exp))
+        (reverse exps))))
+
+  (pick-exp '() (alt-let-args exp)))
+
+(define (alt-let-body exp)
+  (if (null? (cdr exp))
+    (car exp)
+    (alt-let-body (cdr exp))))
+
+#|
+(define (eval-let exp env)
+  (mc-eval (cons (make-lambda (alt-let-vars exp) (list (alt-let-body exp))) (alt-let-exps exp)) env))
+|#
+;; --- Task 3d end ---
 
 ;;; Evaluatorens interne datastrukturer for å representere omgivelser,
 ;;; prosedyrer, osv (seksjon 4.1.3, SICP):
